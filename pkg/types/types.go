@@ -4,5 +4,5 @@ package types
 type ContextKey string
 
 const (
-	LoggerContextKey = ContextKey("logger_key")
+	LoggerContextKey = ContextKey("logger")
 )
