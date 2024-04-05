@@ -7,10 +7,12 @@ type Config struct {
 
 // whatsapp client configuration
 type WhatsAppConfig struct {
-	Version           string `yaml:"version"`
-	PhoneNumberID     string `yaml:"phone_number_id"`
-	BusinessAccountID string `yaml:"business_account_id"`
-	AccessToken       string `yaml:"access_token"`
+	Version           string                 `yaml:"version"`
+	BusinessAccountID string                 `yaml:"business_account_id"`
+	PhoneNumberID     string                 `yaml:"phone_number_id"`
+	AccessToken       string                 `yaml:"access_token"`
+	TemplateIDs       map[string]string      `yaml:"template_ids"`
+	Others            map[string]interface{} `yaml:",inline"`
 }
 
 // logger configuration
