@@ -1,0 +1,11 @@
+whatsapp:
+  phone_number_id: "12345"
+  business_account_id: "12345"
+  access_token: "EAA****"
+  # version: "v19.0"
+
+logger:
+  level: debug
+  mode: record_all
+  encoding: console
+  enable_stacktrace: false
