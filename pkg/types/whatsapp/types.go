@@ -18,6 +18,9 @@ type BusinessProfile struct {
 type Media struct {
 	ID               string `json:"id,omitempty"`
 	File             string `json:"file,omitempty"`
+	Filename         string `json:"filename,omitempty"`
+	FileBytes        []byte `json:"-"` // used internally
+	Caption          string `json:"caption,omitempty"`
 	MediaType        string `json:"type,omitempty"`
 	MessagingProduct string `json:"messaging_product,omitempty"`
 }

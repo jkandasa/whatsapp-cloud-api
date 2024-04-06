@@ -1,6 +1,7 @@
 package whatsapp
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -14,7 +15,7 @@ import (
 )
 
 const (
-	requestContentType = "application/json"
+	RequestContentTypeJson = "application/json"
 )
 
 type Client struct {
@@ -54,23 +55,40 @@ func toMap(data any) (map[string]any, error) {
 	return mapData, nil
 }
 
+func (c *Client) getBodyAsReader(body any) (io.Reader, error) {
+	if body == nil {
+		return nil, nil
+	}
+
+	switch p := body.(type) {
+	case string:
+		return strings.NewReader(p), nil
+	case []byte:
+		return bytes.NewReader(p), nil
+	case io.Reader:
+		return p, nil
+	default:
+		bodyBytes, err := json.Marshal(body)
+		if err != nil {
+			c.logger.Error("error on converting body to bytes", zap.Error(err))
+			return nil, err
+		}
+		return bytes.NewReader(bodyBytes), nil
+
+	}
+}
+
 func (c *Client) newRawRequest(requestContentType, method, path string, headers map[string]string, queryParams any, body any, out any) error {
 	url := fmt.Sprintf("%s%s", c.baseURL, path)
 
-	c.logger.Debug("received request", zap.String("method", method), zap.String("url", url), zap.String("requestContentType", requestContentType), zap.Any("body", body))
+	c.logger.Debug("received request", zap.String("method", method), zap.String("url", url), zap.String("requestContentType", requestContentType))
 
-	stringBody := ""
-	// convert body to string
-	if body != nil {
-		bodyBytes, err := json.Marshal(body)
-		if err != nil {
-			c.logger.Error("error on converting body to string", zap.Error(err))
-			return err
-		}
-		stringBody = string(bodyBytes)
+	bodyReader, err := c.getBodyAsReader(body)
+	if err != nil {
+		return err
 	}
 
-	req, err := http.NewRequest(method, url, strings.NewReader(stringBody))
+	req, err := http.NewRequest(method, url, bodyReader)
 	if err != nil {
 		c.logger.Error("error on getting a new request", zap.Error(err))
 		return err
@@ -145,13 +163,13 @@ func (c *Client) newRawRequest(requestContentType, method, path string, headers 
 }
 
 func (c *Client) Get(api string, headers map[string]string, queryParams any, out any) error {
-	return c.newRawRequest(requestContentType, http.MethodGet, api, headers, queryParams, nil, out)
+	return c.newRawRequest(RequestContentTypeJson, http.MethodGet, api, headers, queryParams, nil, out)
 }
 
 func (c *Client) Post(api string, headers map[string]string, queryParams any, body any, out any) error {
-	return c.newRawRequest(requestContentType, http.MethodPost, api, headers, queryParams, body, out)
+	return c.newRawRequest(RequestContentTypeJson, http.MethodPost, api, headers, queryParams, body, out)
 }
 
 func (c *Client) Delete(api string, headers map[string]string, queryParams any, out any) error {
-	return c.newRawRequest(requestContentType, http.MethodDelete, api, headers, queryParams, nil, out)
+	return c.newRawRequest(RequestContentTypeJson, http.MethodDelete, api, headers, queryParams, nil, out)
 }
