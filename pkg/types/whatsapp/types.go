@@ -89,7 +89,7 @@ type ComponentObject struct {
 	Type       string            `json:"type,omitempty"`
 	SubType    string            `json:"sub_type,omitempty"`
 	Parameters []ParameterObject `json:"parameters,omitempty"`
-	Index      uint64            `json:"index,omitempty"`
+	Index      string            `json:"index,omitempty"`
 }
 
 type ParameterObject struct {
